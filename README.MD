@@ -29,3 +29,19 @@ Every time you need to add a peer to your network, use this command :
 ```
 
 This will attempt to SSH into the remote server, perform key exchange, and create a wireguard interface.
+
+## Endpoint security
+
+The endpoint user bashrc is set up in a way that should be hard to escape into interactive shell, however, I am pretty sure there are many ways to escape out. Thus, it is not wise to keep the registration endpoint available at all times. Just disable the user when it's not needed:
+
+```
+sudo passwd endpoint -l
+```
+
+Where `endpoint` is the username for the endpoint.
+
+Unlock the account when needed with the following command:
+
+```
+sudo passwd endpoint -u
+```
