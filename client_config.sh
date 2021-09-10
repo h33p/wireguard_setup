@@ -10,6 +10,8 @@ dns=$5
 
 KEY_PATH=$HOME/.config/wireguard_setup/client
 
+OPWD=$PWD
+
 if [[ ! -d $KEY_PATH ]]; then
     mkdir -p $KEY_PATH
     cd $KEY_PATH
@@ -19,6 +21,8 @@ fi
 if [[ ! -f $KEY_PATH/privatekey_$client ]]; then
     wg genkey | tee $KEY_PATH/privatekey_$client | wg pubkey > $KEY_PATH/publickey_$client
 fi
+
+cd $OPWD
 
 pubkey=$(cat $KEY_PATH/publickey_$client)
 privkey=$(cat $KEY_PATH/privatekey_$client)
