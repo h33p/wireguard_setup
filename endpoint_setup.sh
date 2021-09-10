@@ -3,7 +3,7 @@
 echo "Enter endpoint username:"
 read username
 
-sudo useradd $username
+sudo useradd -m -s $(which bash) $username
 
 echo "Setup password for $username:"
 sudo passwd $username
@@ -15,7 +15,7 @@ echo "Setup SSHD for ${username}'s password login: [y/N]"
 
 read setup_sshd
 
-case $yn in
+case $setup_sshd in
     [Yy]*) setup_sshd="Y" ;;
     *) setup_sshd="N" ;;
 esac
@@ -31,8 +31,6 @@ if [ $setup_sshd == "Y" ]; then
     cat <<EOF | sudo tee -a $sshd_path
 Match User $username
 PasswordAuthentication yes
-PrintMotd no
-PrintLastLog no
 EOF
 
     sudo systemctl restart sshd
