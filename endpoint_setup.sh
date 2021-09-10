@@ -47,6 +47,8 @@ if [[ -z $wgsetup ]]; then
 fi
 
 cat <<EOF | sudo tee /home/$username/.bashrc
+trap "" SIGINT
+
 read -s passwd
 read -s pubkey
 pubkey=(\$pubkey)
