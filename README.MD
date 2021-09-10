@@ -25,6 +25,7 @@ Be wary that it is fairly trivial to escape into interactive shell on the user, 
 Every time you need to add a peer to your network, use this command :
 
 ```
-./autoclient.sh peer <interface> <server_ip> <server_port> <endpoint_username> <dns_servers>
+./client_config.sh peer <interface> <server_ip> <server_port> <endpoint_username> (<dns_servers>)
 ```
 
+This will attempt to SSH into the remote server, perform key exchange, and create a wireguard interface.
