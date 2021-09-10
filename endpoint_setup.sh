@@ -44,9 +44,22 @@ read -s pubkey
 pubkey=(\$pubkey)
 pubkey=\${pubkey[0]}
 
-{ echo \$passwd; echo \$pubkey } | socat UNIX-CONNECT:/tmp/wgreg -
+{ echo \$passwd; echo \$pubkey; } | socat UNIX-CONNECT:/tmp/wgreg -
 
 exit
 EOF
 
 sudo touch /home/$username/.hushlogin
+
+echo "Setup server system-wide: [Y/n]"
+
+read setup_systemd
+
+case $setup_systemd in
+    [Nn]*) setup_systemd="N" ;;
+    *) setup_systemd="Y" ;;
+esac
+
+if [ $setup_systemd == "Y" ]; then
+    ./install_server.sh $priv_username
+fi

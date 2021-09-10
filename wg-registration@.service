@@ -2,6 +2,7 @@
 Description=Wireguard peer registration system
 
 [Service]
+User=%i
 ExecStart=/usr/bin/env wireguard_registration_listener.sh
 
 [Install]
