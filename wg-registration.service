@@ -1,0 +1,8 @@
+[Unit]
+Description=Wireguard peer registration system
+
+[Service]
+ExecStart=/usr/bin/env wireguard_registration_listener.sh
+
+[Install]
+WantedBy=multi-user.target

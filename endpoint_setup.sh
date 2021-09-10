@@ -36,16 +36,6 @@ EOF
     sudo systemctl restart sshd
 fi
 
-default_wgsetup="server_config.sh"
-
-echo "Enter wireguard setup command: ($default_wgsetup)"
-
-read wgsetup
-
-if [[ -z $wgsetup ]]; then
-    wgsetup=$default_wgsetup
-fi
-
 cat <<EOF | sudo tee /home/$username/.bashrc
 trap "" SIGINT
 
@@ -54,7 +44,7 @@ read -s pubkey
 pubkey=(\$pubkey)
 pubkey=\${pubkey[0]}
 
-{ echo \$passwd; echo \$passwd; } | su -l $priv_username -c "sudo -S $wgsetup peer \$pubkey"
+{ echo \$passwd; echo \$pubkey } | socat UNIX-CONNECT:/tmp/wgreg -
 
 exit
 EOF
