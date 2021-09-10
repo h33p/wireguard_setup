@@ -2,7 +2,7 @@
 
 This script is made for simplifying the set up of a wireguard vpn as well as an unbound DNS server.
 
-It's originally designed for a Debian server, but could be improved for other Os.
+It has been modified to allow for clients to add themselves automatically and share public keys through a somewhat unprivileged user.
 
 ## Usage
 
@@ -11,18 +11,20 @@ Make sure you have WireGuard installed on your server. Follow [those instruction
 To initiate the VPN and configure the Unbound DNS, use the following command and let you guide :
 
 ```
-./server_config.sh init
+sudo ./server_config.sh init
 ```
 
-Every time you need to add a peer to your network, use this command and let you guide one more time :
+Setup the SSH registration endpoint, and let it guide you through :
 
 ```
-./server_config.sh peer
+./endpoint_setup.sh
 ```
 
-## TODO
+Be wary that it is fairly trivial to escape into interactive shell on the user, so use a secure password.
 
-* Add IPv6 support
-* Add comments on the code
-* Add possibilities to use the script on non-Debian servers
-* Make a better client configuration file
+Every time you need to add a peer to your network, use this command :
+
+```
+./autoclient.sh peer <interface> <server_ip> <server_port> <endpoint_username> <dns_servers>
+```
+

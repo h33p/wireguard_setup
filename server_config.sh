@@ -1,5 +1,7 @@
 #!/bin/bash
 
+KEY_PATH=$HOME/.config/wireguard_setup
+
 check_ip_format()
 {
     isip=1
@@ -29,12 +31,12 @@ show_help()
     echo
     echo Commands :
     echo init : Initiate the server for the first time.
-    echo peer : Add a new peer to the configuration.
+    echo peer \<pubkey\> : Add a new peer to the configuration with specified public key, echo its allocated IP address, and server\'s public key.
 }
 
 generate_keys()
 {
-    wg genkey | tee privatekey | wg pubkey > publickey
+    wg genkey | tee $KEY_PATH/privatekey | wg pubkey > $KEY_PATH/publickey
 }
 
 extract_address()
@@ -61,7 +63,6 @@ firewall()
     iptables -A INPUT -p udp -m udp --dport $PORT -m conntrack --ctstate NEW -j ACCEPT
     iptables -A INPUT -s $IP -p tcp -m tcp --dport 53 -m conntrack --ctstate NEW -j ACCEPT
     iptables -A INPUT -s $IP -p udp -m udp --dport 53 -m conntrack --ctstate NEW -j ACCEPT
-
 }
 
 dns()
@@ -137,8 +138,12 @@ init()
     echo Begin the configuration for a VPN server using WireGuard
     echo
 
+    if [[ ! -d $KEY_PATH ]]; then
+        mkdir -p $KEY_PATH
+    fi
+
     generate_keys
-    private=`cat privatekey`
+    private=`cat $KEY_PATH/privatekey`
     #public=`cat publickey`
 
     SUBNET="10.8.0.0/24"
@@ -205,16 +210,22 @@ init()
 
     firewall "$SUBNET" "$PORT"
 
-    dns "$SUBNET"
+    if [[ $1 -eq 1 ]]; then
+        dns "$SUBNET"
+    fi
 }
 
 peer()
 {
+    key=$1
+
+    if [[ -z $key ]]; then
+        exit
+    fi
+
     wg-quick down wg0
     echo "" >> /etc/wireguard/wg0.conf
     echo \[Peer\] >> /etc/wireguard/wg0.conf
-    echo Enter the public key of the peer :
-    read key
     echo PublicKey = $key >> /etc/wireguard/wg0.conf
     file="/etc/wireguard/subnet"
     base_regex="base\:([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)"
@@ -233,6 +244,8 @@ peer()
     current=$((current+1))
 
     echo $base$current
+    cat $KEY_PATH/publickey | head -n 1
+
     echo AllowedIPs = $base$current/32 >> /etc/wireguard/wg0.conf
     echo base:$base > /etc/wireguard/subnet
     echo current:$current >> /etc/wireguard/subnet
@@ -242,7 +255,7 @@ peer()
 if [ $# -eq 0 ]; then
     show_help
 elif [ $1 == "init" ]; then
-    init
+    init $2
 elif [ $1 == "peer" ]; then
-    peer
+    peer $2
 fi

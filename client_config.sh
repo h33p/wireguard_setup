@@ -1,30 +1,21 @@
 #!/usr/bin/env bash
 
-echo Name of the client :
-read client
+client=$1
+ip=$2
+dns=$3
+public_ip=$4
+key=$5
 
-wg genkey | tee privatekey_$client | wg pubkey > publickey_$client
+output=($(./client_keys.sh $client))
 
-private=`cat privatekey_$client`
-#public=`cat publickey_$client`
+private=${output[1]}
 
 echo [Interface] > $client.conf
 echo PrivateKey = $private >> $client.conf
 
-echo Enter allocated address by the server :
-read ip
-
 echo Address = $ip >> $client.conf
-echo Enter local DNS IP :
-read dns
 
 echo DNS = $dns >> $client.conf
-
-echo Enter Public IP address of the server and the port :
-read public_ip
-
-echo Enter public key of the server :
-read key
 
 echo >> $client.conf
 echo [Peer] >> $client.conf
